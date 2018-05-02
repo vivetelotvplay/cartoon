@@ -1,7 +1,33 @@
-<!DOCTYPE html>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/cdn-cgi/apps/head/HgwijWEz4Y6jk8ecRf3qjoI3AEg.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/clappr/latest/clappr.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/clappr.level-selector/latest/level-selector.min.js"></script>
+<script src="https://cdn.jsdelivr.net/clappr.chromecast-plugin/latest/clappr-chromecast-plugin.js"></script>
+<div id="fcn"></div>
+<script>
+var playerElement = document.getElementById("fcn");
 
-<head><title></title><div style="position:relative; padding-bottom:56.25%; overflow:hidden;"><iframe src="http://content.jwplatform.com/players/M45mEVof-tLiCXaAr.html" width="100%" height="100%" frameborder="0" scrolling="auto" allowfullscreen style="position:absolute;"></iframe></div>
-</body>
-</html>
+var player = new Clappr.Player({
+ height: "400",
+ width: "100%",
+ preload: 'auto',
+ autoPlay: 'true',
+ watermark: "", position: 'top-right',
+ watermarkLink: "http://futbolchile.net",
+ mediacontrol: {seekbar: "#7e8b2e", buttons: "#7e8b2e"},
+  plugins: {
+    'core': [LevelSelector]
+  },
+ hlsjsConfig: {
+ xhrSetup: function(xhr, url) {
+  xhr.withCredentials = false;
+ }
+ },
+ playbackConfig: {
+ crossorigin: 'cors.genti.stream'
+ }
+});
+
+player.attachTo(playerElement);
+player.load({source: 'https://cdn.younow.com/php/api/broadcast/videoPath/hls=1/broadcastId=179734680_live.m3u8', mimeType: 'application/x-mpegURL'});
+player.play();
+</script>
