@@ -1,1 +1,27 @@
- <!-- Inicio. streaming tv radio hosting USAstreams.com html5 player --><video id=usastreams-video  keyLicencia="2854361USAstreams.COM" crossorigin="anonymous"  class="video-js vjs-fluid vjs-default-skin" autoplay controls poster=''><source src="http://disfruta.club:8000/live/tvpremiumhd355/ddlsikej556s/2236.m3u8" type="application/x-mpegURL"></video>    <link href="http://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">    <script type="text/javascript" src ="http://unpkg.com/video.js/dist/video.js"></script>    <script type="text/javascript" src ="http://cp.usastreams.com/playerHTML5/ContadorVideo.js"></script>    <link href="http://cp.usastreams.com/playerHTML5/media/twitter.css" rel="stylesheet">    <script src="http://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>    <script>      (function(window, videojs) {        var player = window.player = videojs('usastreams-video');          return false;        }      (window, window.videojs));    </script><!-- Fin. USAstreams.com html5 player -->
+<div class="leanback-player-video">
+	<!-- HTML5 Video Element -->
+	<video width="640" height="360" preload="auto" autoplay controls poster="http://leanbackplayer.com/videos/poster/elephants_dream_640x360.jpg">
+		<!-- HTML5 Video Source(s) -->
+		<source src="http://leanbackplayer.com/videos/360p/elephants_dream_640x360_2.30.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' />
+
+		<!-- Flash-Fallback (JW Player) -->
+		<object class="leanback-player-flash-fallback" width="640" height="360" type="application/x-shockwave-flash" data="http://player.longtailvideo.com/player.swf">
+			<param name="movie" value="http://player.longtailvideo.com/player.swf" />
+			<param name="allowFullScreen" value="true" />
+			<param name="wmode" value="opaque" />
+			<param name="bgcolor" value="#000000" />
+			<param name="flashVars" value="autostart=true&amp;controlbar=over&amp;file=http://leanbackplayer.com/videos/360p/elephants_dream_640x360_2.30.mp4
+					&amp;image=http://leanbackplayer.com/videos/poster/elephants_dream_640x360.jpg" />
+		</object>
+
+		<!-- HTML-Fallback -->
+		<div class="leanback-player-html-fallback" style="width: 640px; height: 360px;">
+			<img src="http://leanbackplayer.com/videos/poster/elephants_dream_640x360.jpg" width="640" height="360" alt="Poster Image" 
+				title="No HTML5-Video playback capabilities found. Please download the video(s) below." />
+			<div>
+				<strong>Download Video:</strong>
+				<a href="http://leanbackplayer.com/videos/360p/elephants_dream_640x360_2.30.mp4">.mp4</a>
+			</div>
+		</div>
+	</video>
+</div>
