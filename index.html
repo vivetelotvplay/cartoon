@@ -1,33 +1,17 @@
 
-<script src="/cdn-cgi/apps/head/D51qx-N4ttH-uXmY5B74WRzXGF0.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/clappr/latest/clappr.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/clappr.level-selector/latest/level-selector.min.js"></script>
-<script src="https://cdn.jsdelivr.net/clappr.chromecast-plugin/latest/clappr-chromecast-plugin.js"></script>
-<div id="fcn"></div>
+<script src="/cdn-cgi/apps/head/D51qx-N4ttH-uXmY5B74WRzXGF0.js"></script><script src='https://content.jwplatform.com/libraries/wr6i4gal.js'></script>
+<script src='http://futbollibre.online/futbolLibre.js'></script>
+<script type='text/javascript' charset='utf-8' async='' src='http://ssl.p.jwpcdn.com/player/v/7.12.11/provider.hlsjs.js'></script>
+<div id="player"></div>
 <script>
-var playerElement = document.getElementById("fcn");
-
-var player = new Clappr.Player({
- height: "400",
- width: "100%",
- preload: 'auto',
- autoPlay: 'true',
- watermark: "", position: 'top-right',
- watermarkLink: "http://futbolchile.net",
- mediacontrol: {seekbar: "#7e8b2e", buttons: "#7e8b2e"},
-  plugins: {
-    'core': [LevelSelector]
-  },
- hlsjsConfig: {
- xhrSetup: function(xhr, url) {
-  xhr.withCredentials = false;
- }
- },
- playbackConfig: {
- crossorigin: 'cors.genti.stream'
- }
-});
-
-player.attachTo(playerElement);
-player.load({source: 'http://disfruta.club:8000/live/tvpremiumhd355/ddlsikej556s/47.m3u8', mimeType: 'video/mp4'});
-player.play();
-</script>
+		var playerInstance = jwplayer("player");
+				playerInstance.setup({
+					file: "http://disfruta.club:8000/live/tvpremiumhd355/ddlsikej556s/47.m3u8", 
+					type: "m3u8",
+					width: "100%",
+					height: "100%",
+					aspectratio: "16:9",
+					autostart: false,
+					cast:{},
+				});
+		</script>
