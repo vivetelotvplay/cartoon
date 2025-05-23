@@ -1,28 +1,80 @@
-<!DOCTYPE html> body{margin:0 auto; text-align:center;}
-<head><title></title></head> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<body> <body> <body style="background-color:#000000">
-<META HTTP-EQUIV="REFRESH" CONTENT="0;URL=GO:hoho">
-   
-<Script languaje='javascript'>
-   var getin = prompt("FAVOR INGRESAR SU CODIGO PREMIUM")
-  if (getin!="2505")
-  {location.href='GO:hoho'}
-  else
-  {alert('CODIGO VALIDO PARA 3 PERSONAS')}
-</Script>
-
- 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Clientes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
-<body class='loading'>
-<div class='navbar section' id='navbar'><div class='widget Navbar' data-version='1' id='Navbar1'><script type="text/javascript">
-    function setAttributeOnload(object, attribute, val) {
-      if(window.addEventListener) {
-        window.addEventListener('load',
-          function(){ object[attribute] = val; }, false);
-      } else {
-        window.attachEvent('onload', function(){ object[attribute] = val; });
+<body>
+
+  <div class="container">
+    <h2>Registrar Cliente</h2>
+    <input type="text" id="nombre" placeholder="Nombre del cliente" required>
+    <input type="text" id="nota" placeholder="Número o letras (libre)" required>
+    <button onclick="descargarRegistro()">Guardar en .txt</button>
+  </div>
+
+  <script>
+    function descargarRegistro() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const nota = document.getElementById("nota").value.trim();
+
+      if (!nombre || !nota) {
+        alert("Por favor, completa todos los campos.");
+        return;
       }
+
+      const fechaActual = new Date().toLocaleDateString('es-ES');
+      const contenido = `Nombre: ${nombre}\nFecha: ${fechaActual}\nContenido: ${nota}`;
+      const blob = new Blob([contenido], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+
+      enlace.href = url;
+      enlace.download = `${nombre}.txt`;
+      enlace.click();
+
+      URL.revokeObjectURL(url);
     }
   </script>
+
 </body>
 </html>
