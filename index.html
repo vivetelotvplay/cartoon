@@ -2,79 +2,85 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <title>Registro con PIN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Clientes</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      margin: 0;
-      background-color: #f4f4f4;
+      background: #f0f0f0;
     }
-    .container {
+    .box {
       max-width: 400px;
       margin: auto;
-      background-color: white;
+      background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
     input, button {
       width: 100%;
-      padding: 14px;
       margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      padding: 12px;
       font-size: 16px;
     }
     button {
-      background-color: #007bff;
+      background-color: #28a745;
       color: white;
       border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <h2>Registrar Cliente</h2>
-    <input type="text" id="nombre" placeholder="Nombre del cliente" required>
-    <input type="text" id="nota" placeholder="Número o letras (libre)" required>
-    <button onclick="descargarRegistro()">Guardar en .txt</button>
+  <div class="box">
+    <h2>Registro de Cliente</h2>
+    <input type="text" id="nombre" placeholder="Nombre del Cliente">
+    <input type="text" id="nota" placeholder="Número o Nota">
+    <button onclick="descargarArchivo()">Descargar archivo protegido</button>
   </div>
 
   <script>
-    function descargarRegistro() {
+    function descargarArchivo() {
       const nombre = document.getElementById("nombre").value.trim();
       const nota = document.getElementById("nota").value.trim();
+      const fecha = new Date().toLocaleDateString("es-ES");
 
       if (!nombre || !nota) {
-        alert("Por favor, completa todos los campos.");
+        alert("Completa todos los campos.");
         return;
       }
 
-      const fechaActual = new Date().toLocaleDateString('es-ES');
-      const contenido = `Nombre: ${nombre}\nFecha: ${fechaActual}\nContenido: ${nota}`;
-      const blob = new Blob([contenido], { type: "text/plain" });
+      // IMPORTANTE: escapamos el contenido del script con comillas simples
+      const contenido = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>${nombre}</title></head>
+<body>
+<script>
+var getin = prompt('FAVOR INGRESAR SU CODIGO');
+if (getin !== '2505') {
+  document.body.innerHTML = '<h3>ACCESO DENEGADO</h3>';
+} else {
+  document.write('<h2>Datos del Cliente</h2>');
+  document.write('<p><strong>Nombre:</strong> ${nombre}</p>');
+  document.write('<p><strong>Fecha:</strong> ${fecha}</p>');
+  document.write('<p><strong>Nota:</strong> ${nota}</p>');
+}
+<\/script>
+</body>
+</html>`;
+
+      const blob = new Blob([contenido], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      const enlace = document.createElement("a");
-
-      enlace.href = url;
-      enlace.download = `${nombre}.txt`;
-      enlace.click();
-
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nombre + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
   </script>
-
 </body>
 </html>
