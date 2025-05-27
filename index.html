@@ -36,7 +36,7 @@
 
     async function sincronizarDatos() {
       try {
-        const response = await fetch('http://10.0.0.26:3000/sync', {
+        const response = await fetch('http://localhost:3000/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(datosGuardados)
