@@ -12,11 +12,8 @@
     <button type="submit">Guardar</button>
   </form>
 
-  <p id="estado"></p>
-
   <script>
     const form = document.getElementById('dataForm');
-    const estado = document.getElementById('estado');
     let datosGuardados = JSON.parse(localStorage.getItem('pendientes')) || [];
 
     form.addEventListener('submit', async (e) => {
@@ -36,19 +33,19 @@
 
     async function sincronizarDatos() {
       try {
-        const response = await fetch('http://localhost:3000/sync', {
+        const response = await fetch('http://10.0.0.26:3000/datos_guardados.json/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(datosGuardados)
         });
 
         if (response.ok) {
-          estado.textContent = "✅ Datos sincronizados con el servidor local.";
+          console.log("Datos sincronizados con el servidor local.");
           datosGuardados = [];
           localStorage.removeItem('pendientes');
         }
       } catch (err) {
-        estado.textContent = "⏳ Sin conexión al servidor local. Intentando luego.";
+        console.log("Servidor no disponible. Los datos se guardarán luego.");
       }
     }
 
