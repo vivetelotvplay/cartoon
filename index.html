@@ -1,58 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Guardar Datos</title>
+  <title>Guardar Contactos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { display: block; margin: 10px 0; width: 100%; padding: 10px; }
+  </style>
 </head>
 <body>
-  <h2>Formulario de Contacto</h2>
-  <form id="dataForm">
-    <input type="text" id="nombre" placeholder="Nombre" required><br>
-    <input type="text" id="numero" placeholder="Número" required><br>
-    <button type="submit">Guardar</button>
-  </form>
-
-  <p id="estado"></p>
+  <h2>Guardar nombre y número</h2>
+  <input id="nombre" placeholder="Nombre" />
+  <input id="numero" placeholder="Número" />
+  <button onclick="guardar()">Guardar</button>
+  <p id="estado">⏳ Sin sincronizar</p>
 
   <script>
-    const form = document.getElementById('dataForm');
-    const estado = document.getElementById('estado');
-    let datosGuardados = JSON.parse(localStorage.getItem('pendientes')) || [];
+    const estado = document.getElementById("estado");
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById('nombre').value;
-      const numero = document.getElementById('numero').value;
+    function guardar() {
+      const nombre = document.getElementById("nombre").value;
+      const numero = document.getElementById("numero").value;
+      if (!nombre || !numero) return alert("Faltan datos");
 
-      const nuevoDato = { nombre, numero, fecha: new Date().toISOString() };
-      datosGuardados.push(nuevoDato);
-      localStorage.setItem('pendientes', JSON.stringify(datosGuardados));
+      let datos = JSON.parse(localStorage.getItem("contactos") || "[]");
+      datos.push({ nombre, numero, fecha: new Date().toISOString() });
+      localStorage.setItem("contactos", JSON.stringify(datos));
 
-      document.getElementById('nombre').value = '';
-      document.getElementById('numero').value = '';
+      document.getElementById("nombre").value = "";
+      document.getElementById("numero").value = "";
+      estado.textContent = "📦 Guardado localmente";
 
-      sincronizarDatos();
-    });
+      intentarSincronizar();
+    }
 
-    async function sincronizarDatos() {
+    async function intentarSincronizar() {
+      let datos = JSON.parse(localStorage.getItem("contactos") || "[]");
+      if (!datos.length) return;
+
       try {
-        const response = await fetch('http://10.0.0.26:3000/sync', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(datosGuardados)
+        const res = await fetch("http://10.0.0.26:3000/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos),
         });
-
-        if (response.ok) {
-          estado.textContent = "✅ Datos sincronizados con el servidor local.";
-          datosGuardados = [];
-          localStorage.removeItem('pendientes');
+        if (res.ok) {
+          localStorage.removeItem("contactos");
+          estado.textContent = "✅ Sincronizado con servidor local";
+        } else {
+          estado.textContent = "❌ Error al sincronizar";
         }
-      } catch (err) {
-        estado.textContent = "⏳ Sin conexión al servidor local. Intentando luego.";
+      } catch {
+        estado.textContent = "🔌 Servidor local no disponible";
       }
     }
 
-    setInterval(sincronizarDatos, 10000);
+    // Intentar sincronizar cada 10 segundos automáticamente
+    setInterval(intentarSincronizar, 10000);
   </script>
 </body>
 </html>
