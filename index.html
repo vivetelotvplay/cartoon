@@ -1,63 +1,152 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Guardar Contactos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { display: block; margin: 10px 0; width: 100%; padding: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+    h2 {
+      color: #4CAF50;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 300px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
   </style>
 </head>
 <body>
-  <h2>Guardar nombre y número</h2>
-  <input id="nombre" placeholder="Nombre" />
-  <input id="numero" placeholder="Número" />
-  <button onclick="guardar()">Guardar</button>
-  <p id="estado">⏳ Sin sincronizar</p>
+  <h2>Agregar producto</h2>
+  <input type="text" id="codigo" placeholder="Código de barras" />
+  <input type="text" id="nombre" placeholder="Nombre del producto" />
+  <input type="number" id="cantidad" placeholder="Cantidad" />
+  <button onclick="guardarProducto()">Guardar</button>
+
+  <h3>Inventario</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-inventario"></tbody>
+  </table>
 
   <script>
-    const estado = document.getElementById("estado");
+    let inventario = [];
+    let editando = -1;
 
-    function guardar() {
-      const nombre = document.getElementById("nombre").value;
-      const numero = document.getElementById("numero").value;
-      if (!nombre || !numero) return alert("Faltan datos");
-
-      let datos = JSON.parse(localStorage.getItem("contactos") || "[]");
-      datos.push({ nombre, numero, fecha: new Date().toISOString() });
-      localStorage.setItem("contactos", JSON.stringify(datos));
-
-      document.getElementById("nombre").value = "";
-      document.getElementById("numero").value = "";
-      estado.textContent = "📦 Guardado localmente";
-
-      intentarSincronizar();
+    async function cargarInventario() {
+      const res = await fetch('/api/inventario');
+      inventario = await res.json();
+      mostrarInventario();
     }
 
-    async function intentarSincronizar() {
-      let datos = JSON.parse(localStorage.getItem("contactos") || "[]");
-      if (!datos.length) return;
+    function mostrarInventario() {
+      const tabla = document.getElementById("tabla-inventario");
+      tabla.innerHTML = "";
+      inventario.forEach((item, index) => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${item.codigo}</td>
+            <td>${item.nombre}</td>
+            <td>${item.cantidad}</td>
+            <td>
+              <button onclick="editarProducto(${index})">Editar</button>
+              <button class="btn-danger" onclick="eliminarProducto(${index})">Eliminar</button>
+            </td>
+          </tr>`;
+      });
+    }
 
-      try {
-        const res = await fetch("http://10.0.0.26:3000/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(datos),
-        });
-        if (res.ok) {
-          localStorage.removeItem("contactos");
-          estado.textContent = "✅ Sincronizado con servidor local";
-        } else {
-          estado.textContent = "❌ Error al sincronizar";
-        }
-      } catch {
-        estado.textContent = "🔌 Servidor local no disponible";
+    async function guardarProducto() {
+      const codigo = document.getElementById("codigo").value;
+      const nombre = document.getElementById("nombre").value;
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+
+      if (!codigo || !nombre || isNaN(cantidad)) return;
+
+      if (editando >= 0) {
+        inventario[editando] = { codigo, nombre, cantidad };
+        editando = -1;
+      } else {
+        inventario.push({ codigo, nombre, cantidad });
+      }
+
+      await guardarEnServidor();
+      mostrarInventario();
+      limpiarFormulario();
+    }
+
+    function editarProducto(index) {
+      const producto = inventario[index];
+      document.getElementById("codigo").value = producto.codigo;
+      document.getElementById("nombre").value = producto.nombre;
+      document.getElementById("cantidad").value = producto.cantidad;
+      editando = index;
+    }
+
+    async function eliminarProducto(index) {
+      if (confirm("¿Estás seguro de eliminar este producto?")) {
+        inventario.splice(index, 1);
+        await guardarEnServidor();
+        mostrarInventario();
       }
     }
 
-    // Intentar sincronizar cada 10 segundos automáticamente
-    setInterval(intentarSincronizar, 10000);
+    async function guardarEnServidor() {
+      await fetch('/api/inventario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inventario)
+      });
+    }
+
+    function limpiarFormulario() {
+      document.getElementById("codigo").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("cantidad").value = "";
+    }
+
+    cargarInventario();
   </script>
 </body>
 </html>
